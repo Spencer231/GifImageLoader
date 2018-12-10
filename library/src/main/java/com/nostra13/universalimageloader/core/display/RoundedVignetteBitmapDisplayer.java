@@ -22,10 +22,15 @@ import android.graphics.PorterDuff;
 import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
+import android.text.TextUtils;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+
+import java.io.IOException;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Can display bitmap with rounded corners and vignette effect. This implementation works only with ImageViews wrapped
@@ -44,37 +49,46 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
  */
 public class RoundedVignetteBitmapDisplayer extends RoundedBitmapDisplayer {
 
-    public RoundedVignetteBitmapDisplayer(int cornerRadiusPixels, int marginPixels) {
-        super(cornerRadiusPixels, marginPixels);
-    }
+	public RoundedVignetteBitmapDisplayer(int cornerRadiusPixels, int marginPixels) {
+		super(cornerRadiusPixels, marginPixels);
+	}
 
-    @Override
-    public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom, int fileTypeStatus, String filepath) {
-        if (!(imageAware instanceof ImageViewAware)) {
-            throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
-        }
-        imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap, cornerRadius, margin));
-    }
+	@Override
+	public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom, int fileTypeStatus, String filepath) {
+		if (!(imageAware instanceof ImageViewAware)) {
+			throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
+		}
+		if (fileTypeStatus == BitmapDisplayer.FILE_TYPE_GIF_IMAGE && !TextUtils.isEmpty(filepath)) {
+			try {
+				imageAware.setImageDrawable(new GifDrawable(filepath));
+			} catch (IOException e) {
+				imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap, cornerRadius, margin));
+			}
+		} else {
+			imageAware.setImageDrawable(new RoundedVignetteDrawable(bitmap, cornerRadius, margin));
+		}
 
-    protected static class RoundedVignetteDrawable extends RoundedDrawable {
+	}
 
-        RoundedVignetteDrawable(Bitmap bitmap, int cornerRadius, int margin) {
-            super(bitmap, cornerRadius, margin);
-        }
+	protected static class RoundedVignetteDrawable extends RoundedDrawable {
 
-        @Override
-        protected void onBoundsChange(Rect bounds) {
-            super.onBoundsChange(bounds);
-            RadialGradient vignette = new RadialGradient(
-                    mRect.centerX(), mRect.centerY() * 1.0f / 0.7f, mRect.centerX() * 1.3f,
-                    new int[]{0, 0, 0x7f000000}, new float[]{0.0f, 0.7f, 1.0f},
-                    Shader.TileMode.CLAMP);
+		RoundedVignetteDrawable(Bitmap bitmap, int cornerRadius, int margin) {
+			super(bitmap, cornerRadius, margin);
+		}
 
-            Matrix oval = new Matrix();
-            oval.setScale(1.0f, 0.7f);
-            vignette.setLocalMatrix(oval);
+		@Override
+		protected void onBoundsChange(Rect bounds) {
+			super.onBoundsChange(bounds);
+			RadialGradient vignette = new RadialGradient(
+					mRect.centerX(), mRect.centerY() * 1.0f / 0.7f, mRect.centerX() * 1.3f,
+					new int[]{0, 0, 0x7f000000}, new float[]{0.0f, 0.7f, 1.0f},
+					Shader.TileMode.CLAMP);
 
-            paint.setShader(new ComposeShader(bitmapShader, vignette, PorterDuff.Mode.SRC_OVER));
-        }
-    }
+			Matrix oval = new Matrix();
+			oval.setScale(1.0f, 0.7f);
+			vignette.setLocalMatrix(oval);
+
+			paint.setShader(new ComposeShader(bitmapShader, vignette, PorterDuff.Mode.SRC_OVER));
+		}
+	}
 }

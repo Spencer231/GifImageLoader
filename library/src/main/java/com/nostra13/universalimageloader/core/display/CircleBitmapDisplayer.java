@@ -26,10 +26,15 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
+
+import java.io.IOException;
+
+import pl.droidsonroids.gif.GifDrawable;
 
 /**
  * Can display bitmap cropped by a circle. This implementation works only with ImageViews wrapped
@@ -66,7 +71,15 @@ public class CircleBitmapDisplayer implements BitmapDisplayer {
             throw new IllegalArgumentException("ImageAware should wrap ImageView. ImageViewAware is expected.");
         }
 
-        imageAware.setImageDrawable(new CircleDrawable(bitmap, strokeColor, strokeWidth));
+        if (fileTypeStatus == BitmapDisplayer.FILE_TYPE_GIF_IMAGE && !TextUtils.isEmpty(filepath)) {
+            try {
+                imageAware.setImageDrawable(new GifDrawable(filepath));
+            } catch (IOException e) {
+                imageAware.setImageDrawable(new CircleDrawable(bitmap, strokeColor, strokeWidth));
+            }
+        } else {
+            imageAware.setImageDrawable(new CircleDrawable(bitmap, strokeColor, strokeWidth));
+        }
     }
 
     public static class CircleDrawable extends Drawable {

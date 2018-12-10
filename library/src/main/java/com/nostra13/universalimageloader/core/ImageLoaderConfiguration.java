@@ -117,7 +117,7 @@ public final class ImageLoaderConfiguration {
      * <li>threadPoolSize = {@link Builder#DEFAULT_THREAD_POOL_SIZE this}</li>
      * <li>threadPriority = {@link Builder#DEFAULT_THREAD_PRIORITY this}</li>
      * <li>allow to cache different sizes of image in memory</li>
-     * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(Context, int)}</li>
+     * <li>memoryCache = {@link DefaultConfigurationFactory#createMemoryCache(android.content.Context, int)}</li>
      * <li>diskCache = {@link com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache}</li>
      * <li>imageDownloader = {@link DefaultConfigurationFactory#createImageDownloader(Context)}</li>
      * <li>imageDecoder = {@link DefaultConfigurationFactory#createImageDecoder(boolean)}</li>
@@ -615,7 +615,7 @@ public final class ImageLoaderConfiguration {
             if (denyCacheImageMultipleSizesInMemory) {
                 memoryCache = new FuzzyKeyMemoryCache(memoryCache, MemoryCacheUtils.createFuzzyKeyComparator());
             }
-            memoryFilePathCache = new MemoryFilePathCache(100);
+            memoryFilePathCache = new MemoryFilePathCache();
             if (downloader == null) {
                 downloader = DefaultConfigurationFactory.createImageDownloader(context);
             }

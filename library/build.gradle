@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '28.0.2'
 
     defaultConfig {
-        minSdkVersion 12
-        targetSdkVersion 22
+        minSdkVersion 16
+        targetSdkVersion 23
         versionCode 40
         versionName "1.9.5"
     }
@@ -18,10 +18,7 @@ android {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.0-rc3'
-    testCompile 'com.squareup.assertj:assertj-android:1.0.0'
-    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
+    api 'pl.droidsonroids.gif:android-gif-drawable:1.2.6'
 }
 
 
@@ -42,5 +39,3 @@ android.libraryVariants.all { variant ->
     task.from variant.javaCompile.destinationDir
     artifacts.add('archives', task);
 }
-
-apply from: '../gradle/maven_push.gradle'

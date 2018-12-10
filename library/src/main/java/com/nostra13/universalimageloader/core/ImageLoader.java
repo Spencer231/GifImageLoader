@@ -648,6 +648,7 @@ public class ImageLoader {
     public void clearMemoryCache() {
         checkConfiguration();
         configuration.memoryCache.clear();
+        configuration.memoryFilePathCache.clear();
     }
 
     /**
